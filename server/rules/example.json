@@ -1,0 +1,9 @@
+[
+  {
+    "name": "log entry 4",
+    "metric": "log_entry_4",
+    "namespace": ["default"],
+    "container": ["dummy"],
+    "condition": ["4", "log entry"]
+  }
+]

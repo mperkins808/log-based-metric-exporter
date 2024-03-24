@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dummy
+  labels:
+    app: dummy
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: dummy
+  template:
+    metadata:
+      labels:
+        app: dummy
+    spec:
+      containers:
+        - name: dummy
+          image: dummy:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-based-metric-exporter
+  labels:
+    app: log-based-metric-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-based-metric-exporter
+  template:
+    metadata:
+      labels:
+        app: log-based-metric-exporter
+    spec:
+      containers:
+        - name: log-based-metric-exporter
+          image: mattyp123/log-based-metric-exporter:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 10015
+          volumeMounts:
+            - name: rule-files-volume
+              mountPath: "/rules"
+          env:
+            - name: RULE_DIR
+              value: "/rules"
+            - name: EXPORT_ZERO
+              value: "true"
+      volumes:
+        - name: rule-files-volume
+          configMap:
+            name: rule-files
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rule-files
+data:
+  rule1.json: |
+    [
+    {
+      "name": "log entry 400",
+      "metric": "log_entry_400",
+      "namespace": ["default"],
+      "container": ["dummy"],
+      "condition": ["4", "log entry"]
+    }
+    ]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-based-metric-exporter-service
+spec:
+  selector:
+    app: log-based-metric-exporter
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 10015
+  type: ClusterIP
